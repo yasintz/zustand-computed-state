@@ -1,35 +1,16 @@
-on:
-  push:
-    branches:
-      - master
-
-permissions:
-  contents: write
-  pull-requests: write
-
 name: Release
-
-jobs:
+on:
   release:
+    types: [published]
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - id: release
-        uses: google-github-actions/release-please-action@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          release-type: node
-          package-name: zustand-computed-state
-      - uses: actions/checkout@v2
-        if: ${{ steps.release.outputs.release_created }}
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 8
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
+          node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
-        if: ${{ steps.release.outputs.release_created }}
-      - run: pnpm install && pnpm test && pnpm build
-        if: ${{ steps.release.outputs.release_created }}
-      - run: npm publish
+      - run: pnpm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
