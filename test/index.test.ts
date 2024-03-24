@@ -28,13 +28,13 @@ describe('without second callback', () => {
   const computeStateMock = jest.fn(computeState);
   const makeStore = () =>
     create<Store>(
-      computed(set => ({
+      computed((set, get) => ({
         count: 1,
         x: 1,
         y: 1,
         inc: () => set(state => ({ count: state.count + 1 })),
         dec: () => set(state => ({ count: state.count - 1 })),
-        ...compute<Store, ReturnType<typeof computeState>>(computeStateMock),
+        ...compute(get, computeStateMock),
       }))
     );
 
@@ -74,13 +74,13 @@ describe('default config', () => {
   const computeStateMock = jest.fn(computeState);
   const makeStore = () =>
     create<Store>(
-      computed(set => ({
+      computed((set, get) => ({
         count: 1,
         x: 1,
         y: 1,
         inc: () => set(state => ({ count: state.count + 1 })),
         dec: () => set(state => ({ count: state.count - 1 })),
-        ...compute<Store>()(computeStateMock),
+        ...compute(get, computeStateMock),
       }))
     );
 
@@ -143,10 +143,10 @@ describe('slices pattern', () => {
   const computeSliceMock = jest.fn(computeSlice);
   const makeStore = () => {
     const createCountSlice: StateCreator<Store, [], [], CountSlice> = computed(
-      set => ({
+      (set, get) => ({
         count: 1,
         dec: () => set(state => ({ count: state.count - 1 })),
-        ...compute<Store>()(computeSliceMock),
+        ...compute(get, computeSliceMock),
       })
     );
 

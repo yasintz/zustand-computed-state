@@ -29,17 +29,14 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
   };
 }
 
-type ComputeCallback<StoreType, T> = (store: StoreType) => T;
-export function compute<StoreType>(
-  fn?: never
-): <T extends Partial<StoreType>>(fn: ComputeCallback<StoreType, T>) => T;
-export function compute<StoreType, T>(fn: ComputeCallback<StoreType, T>): T;
-export function compute(fn1?: ComputeCallback<any, any>) {
-  function handler(fn: ComputeCallback<any, any>) {
-    return { [prefix]: fn };
-  }
-
-  return fn1 ? { [prefix]: fn1 } : handler;
+export function compute<StoreType, T extends Partial<StoreType>>(
+  // @ts-ignore
+  get: () => StoreType,
+  fn: (store: StoreType) => T
+): T {
+  return {
+    [prefix]: fn,
+  } as any;
 }
 
 type ComputedState = <

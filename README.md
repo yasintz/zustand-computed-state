@@ -27,11 +27,11 @@ const useStore = create(
     count: 1,
     inc: () => set(state => ({ count: state.count + 1 })),
     dec: () => set(state => ({ count: state.count - 1 })),
-    // get() function has access to computed states 
+    // get() function has access to computed states
     square: () => set(() => ({ count: get().countSq })),
     root: () => set(state => ({ count: Math.floor(Math.sqrt(state.count)) })),
 
-    ...compute(state => ({
+    ...compute(get, state => ({
       countSq: state.count ** 2,
     })),
   }))
@@ -57,7 +57,7 @@ const useStore = create<Store>()(
     dec: () => set(state => ({ count: state.count - 1 })),
     square: () => set(() => ({ count: get().countSq })),
     root: () => set(state => ({ count: Math.floor(Math.sqrt(state.count)) })),
-    ...compute<Store>()(state => ({
+    ...compute(get, state => ({
       countSq: state.count ** 2,
     })),
   }))
@@ -92,7 +92,7 @@ Here's an example with the Immer middleware.
 const useStore = create<Store>()(
   devtools(
     computed(
-      immer(set => ({
+      immer((set, get) => ({
         count: 1,
         inc: () =>
           set(state => {
@@ -100,7 +100,7 @@ const useStore = create<Store>()(
             state.count += 1;
           }),
         dec: () => set(state => ({ count: state.count - 1 })),
-        ...compute<Store>()(state => ({
+        ...compute(get, state => ({
           countSq: state.count ** 2,
         })),
       }))
