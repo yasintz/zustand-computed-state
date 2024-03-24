@@ -45,12 +45,13 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^11.1.2",
+    "@types/jest": "^29.5.12",
     "husky": "^9.0.11",
+    "react": "^18.2.0",
     "size-limit": "^11.1.2",
     "tsdx": "^0.14.1",
     "tslib": "^2.6.2",
     "typescript": "^5.4.3",
-    "react": "^18.2.0",
     "zustand": "^4.3.8"
   },
   "peerDependencies": {
