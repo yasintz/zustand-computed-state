@@ -113,7 +113,7 @@ const useStore = create<Store>()(
 ```
 
 [build-img]: https://github.com/yasintz/zustand-computed/actions/workflows/release.yml/badge.svg
-[build-url]: https://github.com/yasintz/zustand-computed/actions/workflows/release.yml
+[build-url]: https://github.com/yasintz/zustand-computed/actions/workflows/build.yml
 [downloads-img]: https://img.shields.io/npm/dt/zustand-computed-state
 [downloads-url]: https://www.npmtrends.com/zustand-computed-state-state
 [npm-img]: https://img.shields.io/npm/v/zustand-computed-state
