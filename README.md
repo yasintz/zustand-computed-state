@@ -51,7 +51,7 @@ type Store = {
 };
 
 const useStore = create<Store>()(
-  computed(set => ({
+  computed((set, get) => ({
     count: 1,
     inc: () => set(state => ({ count: state.count + 1 })),
     dec: () => set(state => ({ count: state.count - 1 })),
@@ -81,8 +81,6 @@ function Counter() {
   );
 }
 ```
-
-A fully-featured example can be found under the "example" directory.
 
 ## With Middleware
 
