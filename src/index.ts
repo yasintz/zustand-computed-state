@@ -10,12 +10,15 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
     ) => {
       set((state: any) => {
         const updated = typeof update === 'object' ? update : update(state);
-
-        const computedSt = state[prefix]?.(updated);
-
-        return {
+        const newState = {
           ...state,
           ...updated,
+        };
+
+        const computedSt = state[prefix]?.(newState);
+
+        return {
+          ...newState,
           ...computedSt,
         };
       }, replace);
