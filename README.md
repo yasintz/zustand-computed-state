@@ -107,6 +107,54 @@ const useStore = create<Store>()(
 );
 ```
 
+## With Slice Pattern
+
+Only difference is sending an ID to compute function to separate computed states for each slide.
+
+```diff
+- ...compute(get, state=>({xSq: state.x **2 }))
++ ...compute('x_slice', get, state=>({xSq: state.x **2 }))
+```
+
+```ts
+type XSlice = {
+  x: number;
+  xSq: number;
+  incX: () => void;
+};
+
+type YSlice = {
+  y: number;
+  ySq: number;
+  incY: () => void;
+};
+
+type Store = YSlice & XSlice;
+
+const createCountSlice: StateCreator<Store, [], [], YSlice> = (set, get) => ({
+  y: 1,
+  incY: () => set(state => ({ y: state.y + 1 })),
+  ...compute('y_slice', get, state => ({
+    ySq: state.y ** 2,
+  })),
+});
+
+const createXySlice: StateCreator<Store, [], [], XSlice> = (set, get) => ({
+  x: 1,
+  incX: () => set(state => ({ x: state.x + 1 })),
+  ...compute('x_slice', get, state => ({
+    xSq: state.x ** 2,
+  })),
+});
+
+const store = create<Store>()(
+  computed((...a) => ({
+    ...createCountSlice(...a),
+    ...createXySlice(...a),
+  }))
+);
+```
+
 [build-img]: https://github.com/yasintz/zustand-computed-state/actions/workflows/release.yml/badge.svg
 [build-url]: https://github.com/yasintz/zustand-computed-state/actions/workflows/build.yml
 [downloads-img]: https://img.shields.io/npm/dt/zustand-computed-state
