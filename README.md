@@ -20,7 +20,7 @@ pnpm add zustand-computed-state
 The middleware layer takes in your store creation function and a compute function, which transforms your state into a computed state. It does not need to handle merging states.
 
 ```js
-import { computed } from 'zustand-computed-state';
+import { computed, compute } from 'zustand-computed-state';
 
 const useStore = create(
   computed((set, get) => ({
@@ -30,9 +30,10 @@ const useStore = create(
     // get() function has access to computed states
     square: () => set(() => ({ count: get().countSq })),
     root: () => set(state => ({ count: Math.floor(Math.sqrt(state.count)) })),
-    get countSq() {
-      return this.count ** 2;
-    },
+
+    ...compute(get, state => ({
+      countSq: state.count ** 2,
+    })),
   }))
 );
 ```
@@ -56,9 +57,9 @@ const useStore = create<Store>()(
     dec: () => set(state => ({ count: state.count - 1 })),
     square: () => set(() => ({ count: get().countSq })),
     root: () => set(state => ({ count: Math.floor(Math.sqrt(state.count)) })),
-    get countSq() {
-      return this.count ** 2;
-    },
+    ...compute(get, state => ({
+      countSq: state.count ** 2,
+    })),
   }))
 );
 ```
@@ -81,6 +82,27 @@ function Counter() {
 }
 ```
 
+## With Getters Pattern
+
+Here's an example with the Getters Pattern
+
+```ts
+const useStore = create<Store>()(
+  devtools(
+    computed((set, get) =>
+      compute<Store>({
+        count: 1,
+        inc: () => set(prev => ({ count: prev.count + 1 })),
+        dec: () => set(state => ({ count: state.count - 1 })),
+        get countSq() {
+          return this.count ** 2;
+        },
+      })
+    )
+  )
+);
+```
+
 ## With Middleware
 
 Here's an example with the Immer middleware.
@@ -97,9 +119,9 @@ const useStore = create<Store>()(
             state.count += 1;
           }),
         dec: () => set(state => ({ count: state.count - 1 })),
-        get countSq() {
-          return this.count ** 2;
-        },
+        ...compute(get, state => ({
+          countSq: state.count ** 2,
+        })),
       }))
     )
   )
@@ -108,11 +130,14 @@ const useStore = create<Store>()(
 
 ## With Slice Pattern
 
-You will need to cover your slices with compute function
+Only difference is sending an ID to compute function to separate computed states for each slide.
+
+```diff
+- ...compute(get, state=>({xSq: state.x **2 }))
++ ...compute('x_slice', get, state=>({xSq: state.x **2 }))
+```
 
 ```ts
-import { computed, compute } from 'zustand-computed-state';
-
 type XSlice = {
   x: number;
   xSq: number;
@@ -125,25 +150,23 @@ type YSlice = {
   incY: () => void;
 };
 
-type Store = XSlice & YSlice;
+type Store = YSlice & XSlice;
 
-const createXSlice: StateCreator<Store, [], [], XSlice> = (set, get) =>
-  compute('x', {
-    x: 1,
-    incX: () => set(state => ({ x: state.x + 1 })),
-    get xSq() {
-      return this.x ** 2;
-    },
-  });
+const createCountSlice: StateCreator<Store, [], [], YSlice> = (set, get) => ({
+  y: 1,
+  incY: () => set(state => ({ y: state.y + 1 })),
+  ...compute('y_slice', get, state => ({
+    ySq: state.y ** 2,
+  })),
+});
 
-const createYSlice: StateCreator<Store, [], [], YSlice> = (set, get) =>
-  compute('y', {
-    y: 1,
-    incY: () => set(state => ({ y: state.y + 1 })),
-    get ySq() {
-      return this.y ** 2;
-    },
-  });
+const createXySlice: StateCreator<Store, [], [], XSlice> = (set, get) => ({
+  x: 1,
+  incX: () => set(state => ({ x: state.x + 1 })),
+  ...compute('x_slice', get, state => ({
+    xSq: state.x ** 2,
+  })),
+});
 
 const store = create<Store>()(
   computed((...a) => ({

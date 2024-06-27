@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { computed } from '../src';
+import { computed, compute } from '../src';
 
 type Store = {
   count: number;
@@ -13,18 +13,17 @@ type Store = {
 describe('with getters', () => {
   const makeStore = () =>
     create<Store>(
-      computed(
-        set =>
-          ({
-            count: 1,
-            x: 1,
-            y: 1,
-            inc: () => set(state => ({ count: state.count + 1 })),
-            dec: () => set(state => ({ count: state.count - 1 })),
-            get countSq() {
-              return this.count ** 2;
-            },
-          } as Store)
+      computed(set =>
+        compute({
+          count: 1,
+          x: 1,
+          y: 1,
+          inc: () => set(state => ({ count: state.count + 1 })),
+          dec: () => set(state => ({ count: state.count - 1 })),
+          get countSq() {
+            return this.count ** 2;
+          },
+        } as Store)
       )
     );
 

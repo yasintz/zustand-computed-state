@@ -32,16 +32,3 @@ export function getAllGetters(obj: any) {
 
   return getters;
 }
-
-const copyDescriptors = (target: any, source: any) => {
-  Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
-};
-
-export function combineSlices<StoreType>(...obj: any[]): StoreType {
-  const target = {};
-
-  obj.forEach(source => {
-    copyDescriptors(target, source);
-  });
-  return target as any;
-}

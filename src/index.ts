@@ -6,12 +6,6 @@ type ComputeFunctionType<StoreType, T> = (store: StoreType) => T;
 
 function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
   return (set, get, api) => {
-    function initialize(state: any) {
-      return {
-        ...state,
-        [`${prefix}_main`]: getComputeFn(state),
-      };
-    }
     function getComputedState(state: any) {
       const computedFunctions = Object.entries(state)
         .filter(([key]) => key.startsWith(prefix))
@@ -46,15 +40,14 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
     };
 
     api.setState = setWithComputed;
-    const st = initialize(f(setWithComputed, get, api));
+    const st = f(setWithComputed, get, api);
 
     return Object.assign({}, st, getComputedState(st));
   };
 }
 
-function getComputeFn(initialState: any) {
+function withGetters(initialState: any) {
   const getters = getAllGetters(initialState);
-
   return (newState: any) => {
     const result: any = {};
 
@@ -66,11 +59,45 @@ function getComputeFn(initialState: any) {
   };
 }
 
-export function compute<T>(id: string, initialState: T): T {
+export function compute<StoreType>(
+  store: StoreType,
+  get?: never,
+  compute?: never
+): StoreType;
+
+export function compute<StoreType, T extends Partial<StoreType>>(
+  id: string,
+  get: () => StoreType,
+  compute: ComputeFunctionType<StoreType, T>
+): T;
+
+export function compute<StoreType, T extends Partial<StoreType>>(
+  get: () => StoreType,
+  compute: ComputeFunctionType<StoreType, T>,
+  id?: never
+): T;
+export function compute(
+  // @ts-ignore
+  getOrId: any,
+  getOrCompute: any,
+  computeOrUndefined: any
+) {
+  if (typeof getOrId === 'string') {
+    return {
+      [`${prefix}_${getOrId}`]: computeOrUndefined,
+    };
+  }
+
+  if (typeof getOrId === 'object') {
+    return {
+      ...getOrId,
+      [prefix]: withGetters(getOrId),
+    };
+  }
+
   return {
-    ...initialState,
-    [`${prefix}_${id}`]: getComputeFn(initialState),
-  };
+    [prefix]: getOrCompute,
+  } as any;
 }
 
 type ComputedState = <
