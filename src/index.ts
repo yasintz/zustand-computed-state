@@ -1,4 +1,5 @@
 import { StateCreator, StoreMutatorIdentifier } from 'zustand';
+import { getAllGetters } from './utils';
 
 const prefix = '$$_computed_';
 type ComputeFunctionType<StoreType, T> = (store: StoreType) => T;
@@ -45,6 +46,25 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
   };
 }
 
+function withGetters(initialState: any) {
+  const getters = getAllGetters(initialState);
+  return (newState: any) => {
+    const result: any = {};
+
+    Object.keys(getters).forEach(key => {
+      result[key] = getters[key].bind(newState)();
+    });
+
+    return result;
+  };
+}
+
+export function compute<StoreType>(
+  store: StoreType,
+  get?: never,
+  compute?: never
+): StoreType;
+
 export function compute<StoreType, T extends Partial<StoreType>>(
   id: string,
   get: () => StoreType,
@@ -65,6 +85,13 @@ export function compute(
   if (typeof getOrId === 'string') {
     return {
       [`${prefix}_${getOrId}`]: computeOrUndefined,
+    };
+  }
+
+  if (typeof getOrId === 'object') {
+    return {
+      ...getOrId,
+      [prefix]: withGetters(getOrId),
     };
   }
 

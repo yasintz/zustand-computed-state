@@ -82,6 +82,27 @@ function Counter() {
 }
 ```
 
+## With Getters Pattern
+
+Here's an example with the Getters Pattern
+
+```ts
+const useStore = create<Store>()(
+  devtools(
+    computed((set, get) =>
+      compute<Store>({
+        count: 1,
+        inc: () => set(prev => ({ count: prev.count + 1 })),
+        dec: () => set(state => ({ count: state.count - 1 })),
+        get countSq() {
+          return this.count ** 2;
+        },
+      })
+    )
+  )
+);
+```
+
 ## With Middleware
 
 Here's an example with the Immer middleware.
