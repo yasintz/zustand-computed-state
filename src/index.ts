@@ -2,24 +2,17 @@ import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { getAllGetters } from './utils';
 
 const prefix = '$$_computed_';
-type ComputeFunctionType<StoreType, T> = (store: StoreType) => T;
 
 function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
+  let getters: any;
   return (set, get, api) => {
     function getComputedState(state: any) {
-      const computedFunctions = Object.entries(state)
-        .filter(([key]) => key.startsWith(prefix))
-        .map(s => s[1] as ComputeFunctionType<any, any>);
+      if (!state[prefix]) {
+        getters = getAllGetters(state);
+        state[prefix] = compute;
+      }
 
-      const computedSt = computedFunctions.reduce(
-        (acc, cur) => ({
-          ...acc,
-          ...cur(state),
-        }),
-        {}
-      );
-
-      return computedSt;
+      return state[prefix](state, getters);
     }
     const setWithComputed = (
       update: any | ((state: any) => any),
@@ -46,58 +39,14 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
   };
 }
 
-function withGetters(initialState: any) {
-  const getters = getAllGetters(initialState);
-  return (newState: any) => {
-    const result: any = {};
+function compute(newState: any, getters: any) {
+  const result: any = {};
 
-    Object.keys(getters).forEach(key => {
-      result[key] = getters[key].bind(newState)();
-    });
+  Object.keys(getters).forEach(key => {
+    result[key] = getters[key].bind(newState)();
+  });
 
-    return result;
-  };
-}
-
-export function compute<StoreType>(
-  store: StoreType,
-  get?: never,
-  compute?: never
-): StoreType;
-
-export function compute<StoreType, T extends Partial<StoreType>>(
-  id: string,
-  get: () => StoreType,
-  compute: ComputeFunctionType<StoreType, T>
-): T;
-
-export function compute<StoreType, T extends Partial<StoreType>>(
-  get: () => StoreType,
-  compute: ComputeFunctionType<StoreType, T>,
-  id?: never
-): T;
-export function compute(
-  // @ts-ignore
-  getOrId: any,
-  getOrCompute: any,
-  computeOrUndefined: any
-) {
-  if (typeof getOrId === 'string') {
-    return {
-      [`${prefix}_${getOrId}`]: computeOrUndefined,
-    };
-  }
-
-  if (typeof getOrId === 'object') {
-    return {
-      ...getOrId,
-      [prefix]: withGetters(getOrId),
-    };
-  }
-
-  return {
-    [prefix]: getOrCompute,
-  } as any;
+  return result;
 }
 
 type ComputedState = <
