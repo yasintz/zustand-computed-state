@@ -2,17 +2,30 @@ import { StateCreator, StoreMutatorIdentifier } from 'zustand';
 import { getAllGetters } from './utils';
 
 const prefix = '$$_computed_';
+type ComputeFunctionType<StoreType, T> = (store: StoreType) => T;
 
 function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
-  let getters: any;
   return (set, get, api) => {
+    function initialize(state: any) {
+      return {
+        ...state,
+        [`${prefix}_main`]: getComputeFn(state),
+      };
+    }
     function getComputedState(state: any) {
-      if (!state[prefix]) {
-        getters = getAllGetters(state);
-        state[prefix] = compute;
-      }
+      const computedFunctions = Object.entries(state)
+        .filter(([key]) => key.startsWith(prefix))
+        .map(s => s[1] as ComputeFunctionType<any, any>);
 
-      return state[prefix](state, getters);
+      const computedSt = computedFunctions.reduce(
+        (acc, cur) => ({
+          ...acc,
+          ...cur(state),
+        }),
+        {}
+      );
+
+      return computedSt;
     }
     const setWithComputed = (
       update: any | ((state: any) => any),
@@ -33,20 +46,31 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
     };
 
     api.setState = setWithComputed;
-    const st = f(setWithComputed, get, api);
+    const st = initialize(f(setWithComputed, get, api));
 
     return Object.assign({}, st, getComputedState(st));
   };
 }
 
-function compute(newState: any, getters: any) {
-  const result: any = {};
+function getComputeFn(initialState: any) {
+  const getters = getAllGetters(initialState);
 
-  Object.keys(getters).forEach(key => {
-    result[key] = getters[key].bind(newState)();
-  });
+  return (newState: any) => {
+    const result: any = {};
 
-  return result;
+    Object.keys(getters).forEach(key => {
+      result[key] = getters[key].bind(newState)();
+    });
+
+    return result;
+  };
+}
+
+export function compute<T>(id: string, initialState: T): T {
+  return {
+    ...initialState,
+    [`${prefix}_${id}`]: getComputeFn(initialState),
+  };
 }
 
 type ComputedState = <
