@@ -1,7 +1,7 @@
 # zustand-computed-state
 
 [![npm package][npm-img]][npm-url]
-[![Build Status][build-img]][build-url]
+[![Release Status][release-img]][release-url]
 [![Downloads][downloads-img]][downloads-url]
 [![Issues][issues-img]][issues-url]
 
@@ -176,8 +176,8 @@ const store = create<Store>()(
 );
 ```
 
-[build-img]: https://github.com/yasintz/zustand-computed-state/actions/workflows/release.yml/badge.svg
-[build-url]: https://github.com/yasintz/zustand-computed-state/actions/workflows/build.yml
+[release-img]: https://github.com/yasintz/zustand-computed-state/actions/workflows/release.yml/badge.svg
+[release-url]: https://github.com/yasintz/zustand-computed-state/actions/workflows/release.yml
 [downloads-img]: https://img.shields.io/npm/dt/zustand-computed-state
 [downloads-url]: https://www.npmtrends.com/zustand-computed-state-state
 [npm-img]: https://img.shields.io/npm/v/zustand-computed-state
