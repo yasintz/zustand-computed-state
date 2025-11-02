@@ -1,5 +1,5 @@
 {
-  "version": "0.1.8",
+  "version": "0.2.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -37,15 +37,15 @@
   },
   "name": "zustand-computed-state",
   "author": "Yasin",
-  "module": "dist/zustand-computed-state.esm.js",
+  "module": "dist/index.mjs",
   "size-limit": [
     {
-      "path": "dist/zustand-computed-state.cjs.production.min.js",
-      "limit": "10 KB"
+      "path": "dist/index.js",
+      "limit": "1 KB"
     },
     {
-      "path": "dist/zustand-computed-state.esm.js",
-      "limit": "10 KB"
+      "path": "dist/index.mjs",
+      "limit": "1 KB"
     }
   ],
   "devDependencies": {

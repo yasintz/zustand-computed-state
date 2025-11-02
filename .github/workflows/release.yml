@@ -19,7 +19,9 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: pnpm test
+      - run: pnpm lint
       - run: pnpm build
+      - run: pnpm size
       - run: pnpm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
