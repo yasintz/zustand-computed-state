@@ -15,11 +15,11 @@
     "url": "https://github.com/yasintz/zustand-computed-state"
   },
   "scripts": {
-    "start": "tsdx watch",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
+    "start": "tsdown --watch",
+    "build": "tsdown",
+    "test": "vitest run",
+    "lint": "oxlint",
+    "prepare": "tsdown",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },
@@ -51,14 +51,17 @@
     "@size-limit/preset-small-lib": "^11.1.2",
     "@types/jest": "^29.5.12",
     "husky": "^9.0.11",
+    "oxlint": "^1.25.0",
     "react": "^18.2.0",
     "size-limit": "^11.1.2",
+    "tsdown": "^0.15.12",
     "tsdx": "^0.14.1",
     "tslib": "^2.6.2",
     "typescript": "^5.4.3",
-    "zustand": "^4.3.8"
+    "vitest": "^4.0.6",
+    "zustand": "^5.0.8"
   },
   "peerDependencies": {
-    "zustand": "^4.3.8"
+    "zustand": "^5.0.8"
   }
 }

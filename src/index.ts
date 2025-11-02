@@ -21,6 +21,40 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
 
       return computedSt;
     }
+    
+    // Override setState to handle computed values
+    // Zustand v5 has stricter types: when replace=true, requires complete state
+    const originalSetState = api.setState;
+    
+    api.setState = ((
+      partial: any | ((state: any) => any),
+      replace?: boolean
+    ) => {
+      const currentState = get();
+      
+      if (replace === true) {
+        // When replace is true, requires complete state (T | ((state: T) => T))
+        const state = typeof partial === 'function' ? partial(currentState) : partial;
+        const newState = {
+          ...state,
+          ...getComputedState(state),
+        };
+        originalSetState(newState, true);
+      } else {
+        // When replace is false/undefined, allow partial updates
+        const updated = typeof partial === 'function' ? partial(currentState) : partial;
+        const newState = {
+          ...currentState,
+          ...updated,
+        };
+
+        originalSetState({
+          ...newState,
+          ...getComputedState(newState),
+        }, false);
+      }
+    }) as typeof originalSetState;
+    
     const setWithComputed = (
       update: any | ((state: any) => any),
       replace?: boolean
@@ -39,7 +73,6 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
       }, replace);
     };
 
-    api.setState = setWithComputed;
     const st = f(setWithComputed, get, api);
 
     return Object.assign({}, st, getComputedState(st));

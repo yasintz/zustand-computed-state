@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { computed, compute } from '../src';
-
+import { describe, test, expect, beforeEach, vi as jest } from 'vitest';
 type Store = {
   count: number;
   x: number;
