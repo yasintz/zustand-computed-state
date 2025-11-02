@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { computed, compute } from '../src';
-import { describe, test, expect, beforeEach, vi as jest } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 
 type Store = {
   count: number;
@@ -30,11 +30,11 @@ describe('with getters', () => {
 
   let useStore: ReturnType<typeof makeStore>;
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     useStore = makeStore();
   });
 
-  const listener = jest.fn();
+  const listener = vi.fn();
 
   test('computed works on simple counter example', () => {
     useStore.subscribe(listener);

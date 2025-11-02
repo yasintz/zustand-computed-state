@@ -19,6 +19,7 @@
     "build": "tsdown",
     "test": "vitest run",
     "lint": "oxlint",
+    "type-check": "tsc --noEmit",
     "prepare": "tsdown",
     "size": "size-limit",
     "analyze": "size-limit --why"
@@ -49,7 +50,6 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^11.1.2",
-    "@types/jest": "^29.5.12",
     "husky": "^9.0.11",
     "oxlint": "^1.25.0",
     "react": "^18.2.0",

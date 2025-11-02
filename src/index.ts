@@ -6,6 +6,7 @@ type ComputeFunctionType<StoreType, T> = (store: StoreType) => T;
 
 function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
   return (set, get, api) => {
+    type Set = typeof set;
     function getComputedState(state: any) {
       const computedFunctions = Object.entries(state)
         .filter(([key]) => key.startsWith(prefix))
@@ -21,41 +22,7 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
 
       return computedSt;
     }
-    
-    // Override setState to handle computed values
-    // Zustand v5 has stricter types: when replace=true, requires complete state
-    const originalSetState = api.setState;
-    
-    api.setState = ((
-      partial: any | ((state: any) => any),
-      replace?: boolean
-    ) => {
-      const currentState = get();
-      
-      if (replace === true) {
-        // When replace is true, requires complete state (T | ((state: T) => T))
-        const state = typeof partial === 'function' ? partial(currentState) : partial;
-        const newState = {
-          ...state,
-          ...getComputedState(state),
-        };
-        originalSetState(newState, true);
-      } else {
-        // When replace is false/undefined, allow partial updates
-        const updated = typeof partial === 'function' ? partial(currentState) : partial;
-        const newState = {
-          ...currentState,
-          ...updated,
-        };
-
-        originalSetState({
-          ...newState,
-          ...getComputedState(newState),
-        }, false);
-      }
-    }) as typeof originalSetState;
-    
-    const setWithComputed = (
+    const setWithComputedFactory = (set: Set) => (
       update: any | ((state: any) => any),
       replace?: boolean
     ) => {
@@ -70,10 +37,13 @@ function injectComputedMiddleware(f: StateCreator<any>): StateCreator<any> {
           ...newState,
           ...getComputedState(newState),
         };
-      }, replace);
+      }, replace as any);
     };
 
-    const st = f(setWithComputed, get, api);
+    const originalSetState = api.setState;
+
+    api.setState = setWithComputedFactory(originalSetState);
+    const st = f(setWithComputedFactory(set), get, api);
 
     return Object.assign({}, st, getComputedState(st));
   };

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { computed, compute } from '../src';
-import { describe, test, expect, beforeEach, vi as jest } from 'vitest';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
 type Store = {
   count: number;
   x: number;
@@ -25,7 +25,7 @@ function computeState(state: Store) {
 }
 
 describe('without second callback', () => {
-  const computeStateMock = jest.fn(computeState);
+  const computeStateMock = vi.fn(computeState);
   const makeStore = () =>
     create<Store>(
       computed((set, get) => ({
@@ -40,7 +40,7 @@ describe('without second callback', () => {
 
   let useStore: ReturnType<typeof makeStore>;
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     useStore = makeStore();
   });
 
@@ -71,7 +71,7 @@ describe('without second callback', () => {
 });
 
 describe('default config', () => {
-  const computeStateMock = jest.fn(computeState);
+  const computeStateMock = vi.fn(computeState);
   const makeStore = () =>
     create<Store>(
       computed((set, get) => ({
@@ -86,7 +86,7 @@ describe('default config', () => {
 
   let useStore: ReturnType<typeof makeStore>;
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     useStore = makeStore();
   });
 

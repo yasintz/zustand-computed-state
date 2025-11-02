@@ -61,8 +61,8 @@ describe('slices pattern', () => {
   test('computed works on slices pattern example', () => {
     const useStore = makeStore();
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(1);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(1);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(1);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(1);
 
     expect(useStore.getState().y).toEqual(1);
     expect(useStore.getState().ySq).toEqual(1);
@@ -72,8 +72,8 @@ describe('slices pattern', () => {
 
     useStore.getState().incY();
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(2);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(2);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(2);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(2);
 
     expect(useStore.getState().y).toEqual(2);
     expect(useStore.getState().ySq).toEqual(4);
@@ -83,8 +83,8 @@ describe('slices pattern', () => {
 
     useStore.getState().incY();
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(3);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(3);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(3);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(3);
 
     expect(useStore.getState().y).toEqual(3);
     expect(useStore.getState().ySq).toEqual(9);
@@ -94,8 +94,8 @@ describe('slices pattern', () => {
 
     useStore.setState({ y: 4 });
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(4);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(4);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(4);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(4);
 
     expect(useStore.getState().y).toEqual(4);
     expect(useStore.getState().ySq).toEqual(16);
@@ -105,16 +105,16 @@ describe('slices pattern', () => {
 
     useStore.getState().incX();
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(5);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(5);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(5);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(5);
 
     expect(useStore.getState().x).toEqual(2);
     expect(useStore.getState().xSq).toEqual(4);
 
     useStore.getState().incX();
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(6);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(6);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(6);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(6);
 
     expect(useStore.getState().y).toEqual(4);
     expect(useStore.getState().ySq).toEqual(16);
@@ -124,8 +124,8 @@ describe('slices pattern', () => {
 
     useStore.setState({ x: 4 });
 
-    expect(vi.fn(computeYSlice)).toHaveBeenCalledTimes(7);
-    expect(vi.fn(computeXSlice)).toHaveBeenCalledTimes(7);
+    expect(computeYSliceMock).toHaveBeenCalledTimes(7);
+    expect(computeXSliceMock).toHaveBeenCalledTimes(7);
 
     expect(useStore.getState().y).toEqual(4);
     expect(useStore.getState().ySq).toEqual(16);
